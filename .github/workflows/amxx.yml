@@ -29,20 +29,14 @@ jobs:
     - name: Build AG Mod X packages
       run: npm run build
 
-    - name: Get current tag and commit SHA for artifact naming
+    - name: Get package version and commit SHA for artifact naming
       id: naming
       run: |
-        if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
-          tag="${GITHUB_REF_NAME}"
-        else
-          tag="v$(node -p 'require("./package.json").version')"
-        fi
-
-        echo "tag=$tag" >> $GITHUB_OUTPUT
+        echo "version=v$(node -p 'require("./package.json").version')" >> $GITHUB_OUTPUT
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Upload AG Mod X package
       uses: actions/upload-artifact@v7.0.1
       with:
-        name: agmodx-${{ steps.naming.outputs.tag }}-dev-${{ steps.naming.outputs.sha_short }}
+        name: agmodx-${{ steps.naming.outputs.version }}-dev-${{ steps.naming.outputs.sha_short }}
         path: dist/valve
