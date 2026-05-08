@@ -1,0 +1,15 @@
+{
+  "name": "agmodx",
+  "version": "2.6.2",
+  "author": "7mochi",
+  "scripts": {
+    "prepare": "amxxpack install",
+    "build": "amxxpack build",
+    "watch": "amxxpack build --watch",
+    "clean": "rimraf .compiler .thirdparty dist"
+  },
+  "dependencies": {
+    "amxxpack": "^1.5.3",
+    "rimraf": "^6.1.3"
+  }
+}

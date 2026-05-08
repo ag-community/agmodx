@@ -1,7 +1,8 @@
 {
-    "amxxpawn.compiler.executablePath": "${workspaceRoot}/.compiler/amxxpc.exe",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
     "amxxpawn.compiler.includePaths": [
         "${workspaceRoot}/.compiler/include",
-        "${workspaceRoot}/valve/addons/amxmodx/scripting/include"
+        "${workspaceRoot}/assets/valve/addons/amxmodx/scripting/include"
     ]
 }
