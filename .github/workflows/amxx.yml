@@ -1,4 +1,4 @@
-name: AG Mod X - Full release package
+name: AG Mod X - Release package
 
 on:
   push:
@@ -14,108 +14,20 @@ jobs:
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v1
+      uses: actions/checkout@v6.0.2
+      with:
+        fetch-depth: 0
 
-    - name: Download latest AMX Mod X v1.9
-      run: |
-        wget "https://www.amxmodx.org/latest.php?version=1.9&os=linux&package=base" -O amxx-linux.tar.gz
-        wget "https://www.amxmodx.org/latest.php?version=1.9&os=windows&package=base" -O amxx-windows.zip
-        mkdir amxx-windows amxx-linux
-        tar -xzf amxx-linux.tar.gz -C amxx-linux && unzip amxx-windows.zip -d amxx-windows
-
-    - name: Download Metamod-P CMake v1.21p39
-      run: |
-        wget "https://github.com/rtxa/Metamod-P-CMake/releases/download/v1.21p39/metamod-cmake-1.21p39-win32-linux.zip" -O metamod.zip
-        unzip metamod.zip -d metamod
-
-    - name: Compile plugins
-      run: |
-        # This dir will contain compiled plugins
-        mkdir .plugins
-
-        # Move to the folder where the compiler is located
-        cd amxx-linux/addons/amxmodx/scripting
-        
-        # Add missing native is_user_authorized (amxmodx.inc)
-        sed 's/native is_user_hltv(index);/& \nnative is_user_authorized(index);\n/' include/amxmodx.inc -i
-
-        # Give amxxpc the required permissions
-        chmod +x amxxpc
-
-        # Compile all plugins inside scripting folder
-        for file in $GITHUB_WORKSPACE/valve/addons/amxmodx/scripting/*.sma
-        do
-          filename="`echo $(basename -s .sma $file)`"
-          echo -e "\nCompiling $filename.sma"
-          ./amxxpc -i$GITHUB_WORKSPACE/valve/addons/amxmodx/scripting/include $file -o$GITHUB_WORKSPACE/.plugins/$filename.amxx
-        done
-
-        # Return to initial location
-        cd $GITHUB_WORKSPACE
-
-    - name: Create AG Mod X folder structure
-      run: |
-        for agmodx_folder in agmodx-dev-linux agmodx-dev-windows
-        do
-          mkdir -p $agmodx_folder/valve && cd $_
-          mkdir addons ctf dlls gamemodes locs models sound
-          cd $GITHUB_WORKSPACE
-        done
-
-    - name: Copy AMX Mod X and compiled plugins
-      run: |
-        # Copy amxmodx addons folder (Windows and linux)
-        cp -a amxx-linux/addons/* agmodx-dev-linux/valve/addons
-        cp -a amxx-windows/addons/* agmodx-dev-windows/valve/addons
-
-        # Copy compiled plugins
-        cp -a .plugins/*.amxx agmodx-dev-linux/valve/addons/amxmodx/plugins
-        cp -a .plugins/*.amxx agmodx-dev-windows/valve/addons/amxmodx/plugins
-
-    - name: Copy assets
-      run: |
-        # Copy assets to both platforms
-        rsync -av --exclude=dlls valve agmodx-dev-linux
-        rsync -av --exclude=dlls valve agmodx-dev-windows
-
-        # Copy server binaries according to platform
-        cp valve/dlls/*.so agmodx-dev-linux/valve/dlls/
-        cp valve/dlls/*.dll agmodx-dev-windows/valve/dlls/
-
-    - name: Copy and setup Metamod
-      run: |
-        # Create metamod folder
-        mkdir -p agmodx-dev-linux/valve/addons/metamod/dlls
-        mkdir -p agmodx-dev-windows/valve/addons/metamod/dlls
-
-        # Copy metamod
-        cp metamod/*.so agmodx-dev-linux/valve/addons/metamod/dlls
-        cp metamod/*.dll agmodx-dev-windows/valve/addons/metamod/dlls
-
-        # Add amxmodx to metamod plugins
-        echo 'linux addons/amxmodx/dlls/amxmodx_mm_i386.so' > agmodx-dev-linux/valve/addons/metamod/plugins.ini
-        echo 'win32 addons/amxmodx/dlls/amxmodx_mm.dll' > agmodx-dev-windows/valve/addons/metamod/plugins.ini
-
-        # Create liblist.gam file
-        liblist='// Valve Game Info file'
-        liblist+='\n// These are key/value pairs.  Certain mods will use different settings.'
-        liblist+='\ngame "Half-Life"'
-        liblist+='\nstartmap "c0a0"'
-        liblist+='\ntrainmap "t0a0"'
-        liblist+='\nmpentity "info_player_deathmatch"'
-        liblist+='\ngamedll "addons\metamod\dlls\metamod.dll"'
-        liblist+='\ngamedll_linux "addons/metamod/dlls/metamod.so"'
-        liblist+='\ngamedll_osx "dlls/hl.dylib"'
-        liblist+='\nsecure "1"'
-        liblist+='\ntype "singleplayer_only"'
-
-        echo -e $liblist > agmodx-dev-linux/valve/liblist.gam
-        echo -e $liblist > agmodx-dev-windows/valve/liblist.gam
-
-    - name: Remove unnecessary files
-      run: |
-        rm -r agmodx-dev-linux/valve/addons/amxmodx/scripting
-        rm -r agmodx-dev-windows/valve/addons/amxmodx/scripting
+    - name: Install NodeJS
+      uses: actions/setup-node@v6.4.0
+      with:
+        node-version: 20
+    
+    - name: Install node dependencies
+      run: npm install
+    
+    - name: Build AG Mod X packages
+      run: npm run build
 
     - name: Get current tag and commit SHA for artifact naming
       id: naming
@@ -123,14 +35,8 @@ jobs:
         echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-    - name: Upload AG Mod X package for Linux
-      uses: actions/upload-artifact@master
+    - name: Upload AG Mod X package
+      uses: actions/upload-artifact@v7.0.1
       with:
-        name: agmodx-${{ steps.naming.outputs.tag }}-dev-linux-${{ steps.naming.outputs.sha_short }}
-        path: agmodx-dev-linux
-
-    - name: Upload AG Mod X package for Windows
-      uses: actions/upload-artifact@master
-      with:
-        name: agmodx-${{ steps.naming.outputs.tag }}-dev-windows-${{ steps.naming.outputs.sha_short }}
-        path: agmodx-dev-windows
+        name: agmodx-${{ steps.naming.outputs.tag }}-dev-${{ steps.naming.outputs.sha_short }}
+        path: dist/valve
