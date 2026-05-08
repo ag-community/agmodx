@@ -2,11 +2,7 @@ name: AG Mod X - Release package
 
 on:
   push:
-    paths-ignore:
-      - 'website/**'
   pull_request:
-    paths-ignore:
-      - 'website/**'
 
 jobs:
   build:
