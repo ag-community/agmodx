@@ -194,6 +194,7 @@ new gCvarWallGauss;
 new gCvarBlastRadius;
 new gCvarRpgFix;
 new gCvarMaxSpeed;
+new gCvarUseLegacySlowdown;
 new gCvarMp5LegacyMaxAmmo;
 new gCvarMp5LegacySpread;
 new gCvarMpHandgrenadeLegacyThrow;
@@ -344,6 +345,7 @@ public plugin_precache() {
 	gCvarWeaponStay = get_cvar_pointer("mp_weaponstay");
 	gCvarMaxSpeed = get_cvar_pointer("sv_maxspeed");
 	// Pre-HL25 cvars
+	gCvarUseLegacySlowdown = create_cvar("sv_ag_use_legacy_slowdown", "0");
 	gCvarMp5LegacyMaxAmmo = create_cvar("sv_ag_mp5_legacy_max_ammo", "0");
 	gCvarMp5LegacySpread = create_cvar("sv_ag_mp5_legacy_spread", "0");
 	gCvarMpHandgrenadeLegacyThrow = create_cvar("sv_ag_mp_handgrenade_legacy_throw", "0");
@@ -355,6 +357,7 @@ public plugin_precache() {
 	hook_cvar_change(gCvarRpgFix, "CvarAgRpgFixHook");
 	hook_cvar_change(gCvarGaussFix, "CvarAgGaussFixHook");
 	hook_cvar_change(gCvarOldPhysics, "CvarOldPhysicsHook");
+	hook_cvar_change(gCvarUseLegacySlowdown, "CvarUseLegacySlowdownHook");
 	hook_cvar_change(gCvarMp5LegacyMaxAmmo, "CvarMp5LegacyMaxAmmoHook");
 	hook_cvar_change(gCvarMp5LegacySpread, "CvarMp5LegacySpreadHook");
 	hook_cvar_change(gCvarMpHandgrenadeLegacyThrow, "CvarMpHandgrenadeLegacyThrowHook");
@@ -887,6 +890,15 @@ public CvarAgGaussFixHook(pcvar, const old_value[], const new_value[]) {
 
 public CvarOldPhysicsHook(pcvar, const old_value[], const new_value[]) {
 	set_pcvar_string(gCvarBunnyHop, new_value);
+}
+
+public CvarUseLegacySlowdownHook(pcvar, const old_value[], const new_value[]) {
+	new num = str_to_num(new_value);
+	if (num == 1)
+		num = 0;
+	else if (num == 0)
+		num = 1;
+	set_cvar_num("mp_useslowdown", num);
 }
 
 public CvarMp5LegacyMaxAmmoHook(pcvar, const old_value[], const new_value[]) {
@@ -1845,6 +1857,7 @@ CreateVoteSystem() {
 	ag_vote_add("ag_rpg_fix", "OnVoteRpgFix");
 	ag_vote_add("ag_spectalk", "OnVoteSpecTalk");
 	ag_vote_add("sv_maxspeed", "OnVoteMaxSpeed");
+	ag_vote_add("sv_ag_use_legacy_slowdown", "OnVoteUseLegacySlowdown");
 	ag_vote_add("sv_ag_mp5_legacy_maxammo", "OnVoteMp5LegacyMaxAmmo");
 	ag_vote_add("sv_ag_mp5_legacy_spread", "OnVoteMp5LegacySpread");
 	ag_vote_add("sv_ag_mp_handgrenade_legacy_throw", "OnVoteMpHandgrenadeLegacyThrow");
@@ -2210,6 +2223,29 @@ public OnVoteWeaponStay(id, check, argc, arg1[], arg2[]) {
 
 	if (!check) {
 		set_pcvar_string(gCvarWeaponStay, arg2);
+	} else {
+		if (!get_pcvar_num(gCvarAllowVoteSetting)) {
+			console_print(id, "%l", "VOTE_NOTALLOWED");
+			return false;
+		}
+
+		if (!is_str_num(arg2)) {
+			console_print(id, "%l", "INVALID_NUMBER");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+public OnVoteUseLegacySlowdown(id, check, argc, arg1[], arg2[]) {
+	if (argc != 2) {
+		console_print(id, "%l", "VOTE_INVALID");
+		return false;
+	}
+
+	if (!check) {
+		set_pcvar_string(gCvarUseLegacySlowdown, arg2);
 	} else {
 		if (!get_pcvar_num(gCvarAllowVoteSetting)) {
 			console_print(id, "%l", "VOTE_NOTALLOWED");
