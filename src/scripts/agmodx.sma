@@ -198,6 +198,7 @@ new gCvarUseLegacySlowdown;
 new gCvarMp5LegacyMaxAmmo;
 new gCvarMp5LegacySpread;
 new gCvarMpHandgrenadeLegacyThrow;
+new gCvarSpawnType;
 new gCvarOldPhysics;
 
 new gCvarStartHealth;
@@ -332,6 +333,7 @@ public plugin_precache() {
 	gCvarWallGauss = create_cvar("sv_ag_wallgauss", "1");
 	gCvarGaussFix = create_cvar("ag_gauss_fix", "0");
 	gCvarRpgFix = create_cvar("ag_rpg_fix", "0");
+	gCvarSpawnType = create_cvar("sv_ag_spawntype", "1");
 	gCvarOldPhysics = create_cvar("sv_ag_oldphysics", "1");
 	gCvarBunnyHop = get_cvar_pointer("mp_bunnyhop");
 	gCvarFallDamage = get_cvar_pointer("mp_falldamage");
@@ -356,6 +358,7 @@ public plugin_precache() {
 	hook_cvar_change(gCvarWallGauss, "CvarWallGaussHook");
 	hook_cvar_change(gCvarRpgFix, "CvarAgRpgFixHook");
 	hook_cvar_change(gCvarGaussFix, "CvarAgGaussFixHook");
+	hook_cvar_change(gCvarSpawnType, "CvarSpawnTypeHook");
 	hook_cvar_change(gCvarOldPhysics, "CvarOldPhysicsHook");
 	hook_cvar_change(gCvarUseLegacySlowdown, "CvarUseLegacySlowdownHook");
 	hook_cvar_change(gCvarMp5LegacyMaxAmmo, "CvarMp5LegacyMaxAmmoHook");
@@ -885,6 +888,10 @@ public CvarAgGaussFixHook(pcvar, const old_value[], const new_value[]) {
 	else if (num == 0)
 		num = 1;
 	set_pcvar_num(gCvarSelfGauss, num);
+}
+
+public CvarSpawnTypeHook(pcvar, const old_value[], const new_value[]) {
+	set_cvar_string("mp_spawntype", new_value);
 }
 
 
