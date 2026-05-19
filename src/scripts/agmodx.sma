@@ -333,7 +333,7 @@ public plugin_precache() {
 	gCvarWallGauss = create_cvar("sv_ag_wallgauss", "1");
 	gCvarGaussFix = create_cvar("ag_gauss_fix", "0");
 	gCvarRpgFix = create_cvar("ag_rpg_fix", "0");
-	gCvarSpawnType = create_cvar("sv_ag_spawntype", "1");
+	gCvarSpawnType = create_cvar("sv_ag_spawn_type", "1");
 	gCvarOldPhysics = create_cvar("sv_ag_oldphysics", "1");
 	gCvarBunnyHop = get_cvar_pointer("mp_bunnyhop");
 	gCvarFallDamage = get_cvar_pointer("mp_falldamage");
