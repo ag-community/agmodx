@@ -12,11 +12,6 @@
     - sv_ag_destroyable_satchel_hp "1"
     - sv_ag_block_namechange_inmatch "1"
 
-    # Default custom cvars values:
-    - sv_ag_mp5_legacy_max_ammo "0"
-    - sv_ag_mp5_legacy_spread "0"
-    - sv_ag_hgrenade_legacy_throw "0"
-
     # New vote:
     - mp_respawn_fix "0/1"
 
