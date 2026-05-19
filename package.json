@@ -1,6 +1,6 @@
 {
   "name": "agmodx",
-  "version": "2.6.2",
+  "version": "2.7.0",
   "author": "7mochi",
   "scripts": {
     "prepare": "amxxpack install",
