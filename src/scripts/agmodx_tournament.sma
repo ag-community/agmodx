@@ -4,7 +4,7 @@
     # New cvars:
     - sv_ag_fpslimit_check_interval "5.0"
     - sv_ag_fpslimit_max_detections "5"
-    - sv_ag_fpslimit_max_fps "144"
+    - sv_ag_fpslimit_max_fps "240"
     - sv_ag_fpslimiter_margin_error "0.6"
     - sv_ag_unstuck_cooldown "10.0"
     - sv_ag_check_soundfiles "1"
@@ -111,7 +111,7 @@ public agmodx_pre_config() {
     // FPS Limiter
     gCvarFpsCheckInterval = create_cvar("sv_ag_fpslimit_check_interval", "5.0");
     gCvarFpsMaxDetections = create_cvar("sv_ag_fpslimit_max_detections", "5");
-    gCvarFpsMax = create_cvar("sv_ag_fpslimit_max_fps", "144");
+    gCvarFpsMax = create_cvar("sv_ag_fpslimit_max_fps", "240");
     gCvarFpsMarginError = create_cvar("sv_ag_fpslimiter_margin_error", "0.6");
 
     // Unstuck command
