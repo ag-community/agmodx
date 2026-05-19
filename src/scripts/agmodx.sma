@@ -348,7 +348,7 @@ public plugin_precache() {
 	gCvarUseLegacySlowdown = create_cvar("sv_ag_use_legacy_slowdown", "0");
 	gCvarMp5LegacyMaxAmmo = create_cvar("sv_ag_mp5_legacy_max_ammo", "0");
 	gCvarMp5LegacySpread = create_cvar("sv_ag_mp5_legacy_spread", "0");
-	gCvarMpHandgrenadeLegacyThrow = create_cvar("sv_ag_mp_handgrenade_legacy_throw", "0");
+	gCvarMpHandgrenadeLegacyThrow = create_cvar("sv_ag_hgrenade_legacy_throw", "0");
 
 	// bind some ag cvars with the ones from bugfixed hl...
 	hook_cvar_change(gCvarHeadShot, "CvarAgHeadShotHook");
