@@ -14,7 +14,7 @@
 
     # Default custom cvars values:
     - sv_ag_mp5_legacy_max_ammo "0"
-    - sv_ag_mp5_legacy_spread "1"
+    - sv_ag_mp5_legacy_spread "0"
     - sv_ag_hgrenade_legacy_throw "0"
 
     # New vote:

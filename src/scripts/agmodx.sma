@@ -34,7 +34,7 @@
 #include <hlstocks>
 
 #define PLUGIN  "AG Mod X"
-#define AUTHOR  "rtxA"
+#define AUTHOR  "rtxA & 7mochi"
 
 #define CONTACT_INFO "More info: https://git.io/agmodx"
 
@@ -194,6 +194,9 @@ new gCvarWallGauss;
 new gCvarBlastRadius;
 new gCvarRpgFix;
 new gCvarMaxSpeed;
+new gCvarMp5LegacyMaxAmmo;
+new gCvarMp5LegacySpread;
+new gCvarMpHandgrenadeLegacyThrow;
 new gCvarOldPhysics;
 
 new gCvarStartHealth;
@@ -340,6 +343,10 @@ public plugin_precache() {
 	gCvarTimeLimit = get_cvar_pointer("mp_timelimit");
 	gCvarWeaponStay = get_cvar_pointer("mp_weaponstay");
 	gCvarMaxSpeed = get_cvar_pointer("sv_maxspeed");
+	// Pre-HL25 cvars
+	gCvarMp5LegacyMaxAmmo = create_cvar("sv_ag_mp5_legacy_max_ammo", "0");
+	gCvarMp5LegacySpread = create_cvar("sv_ag_mp5_legacy_spread", "0");
+	gCvarMpHandgrenadeLegacyThrow = create_cvar("sv_ag_mp_handgrenade_legacy_throw", "0");
 
 	// bind some ag cvars with the ones from bugfixed hl...
 	hook_cvar_change(gCvarHeadShot, "CvarAgHeadShotHook");
@@ -348,6 +355,9 @@ public plugin_precache() {
 	hook_cvar_change(gCvarRpgFix, "CvarAgRpgFixHook");
 	hook_cvar_change(gCvarGaussFix, "CvarAgGaussFixHook");
 	hook_cvar_change(gCvarOldPhysics, "CvarOldPhysicsHook");
+	hook_cvar_change(gCvarMp5LegacyMaxAmmo, "CvarMp5LegacyMaxAmmoHook");
+	hook_cvar_change(gCvarMp5LegacySpread, "CvarMp5LegacySpreadHook");
+	hook_cvar_change(gCvarMpHandgrenadeLegacyThrow, "CvarMpHandgrenadeLegacyThrowHook");
 
 	// keep AG HUD color updated
 	new color[32];
@@ -877,6 +887,18 @@ public CvarAgGaussFixHook(pcvar, const old_value[], const new_value[]) {
 
 public CvarOldPhysicsHook(pcvar, const old_value[], const new_value[]) {
 	set_pcvar_string(gCvarBunnyHop, new_value);
+}
+
+public CvarMp5LegacyMaxAmmoHook(pcvar, const old_value[], const new_value[]) {
+	set_cvar_string("mp_mp5_legacy_max_ammo", new_value);
+}
+
+public CvarMp5LegacySpreadHook(pcvar, const old_value[], const new_value[]) {
+	set_cvar_string("mp_mp5_legacy_spread", new_value);
+}
+
+public CvarMpHandgrenadeLegacyThrowHook(pcvar, const old_value[], const new_value[]) {
+	set_cvar_string("mp_hgrenade_legacy_throw", new_value);
 }
 
 public CvarMpDmgHook(pcvar, const old_value[], const new_value[]) {
@@ -1823,6 +1845,9 @@ CreateVoteSystem() {
 	ag_vote_add("ag_rpg_fix", "OnVoteRpgFix");
 	ag_vote_add("ag_spectalk", "OnVoteSpecTalk");
 	ag_vote_add("sv_maxspeed", "OnVoteMaxSpeed");
+	ag_vote_add("sv_ag_mp5_legacy_maxammo", "OnVoteMp5LegacyMaxAmmo");
+	ag_vote_add("sv_ag_mp5_legacy_spread", "OnVoteMp5LegacySpread");
+	ag_vote_add("sv_ag_mp_handgrenade_legacy_throw", "OnVoteMpHandgrenadeLegacyThrow");
 }
 
 public OnVoteSpecTalk(id, check, argc, arg1[], arg2[]) {
@@ -2185,6 +2210,75 @@ public OnVoteWeaponStay(id, check, argc, arg1[], arg2[]) {
 
 	if (!check) {
 		set_pcvar_string(gCvarWeaponStay, arg2);
+	} else {
+		if (!get_pcvar_num(gCvarAllowVoteSetting)) {
+			console_print(id, "%l", "VOTE_NOTALLOWED");
+			return false;
+		}
+
+		if (!is_str_num(arg2)) {
+			console_print(id, "%l", "INVALID_NUMBER");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+public OnVoteMp5LegacyMaxAmmo(id, check, argc, arg1[], arg2[]) {
+	if (argc != 2) {
+		console_print(id, "%l", "VOTE_INVALID");
+		return false;
+	}
+
+	if (!check) {
+		set_pcvar_string(gCvarMp5LegacyMaxAmmo, arg2);
+	} else {
+		if (!get_pcvar_num(gCvarAllowVoteSetting)) {
+			console_print(id, "%l", "VOTE_NOTALLOWED");
+			return false;
+		}
+
+		if (!is_str_num(arg2)) {
+			console_print(id, "%l", "INVALID_NUMBER");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+public OnVoteMp5LegacySpread(id, check, argc, arg1[], arg2[]) {
+	if (argc != 2) {
+		console_print(id, "%l", "VOTE_INVALID");
+		return false;
+	}
+
+	if (!check) {
+		set_pcvar_string(gCvarMp5LegacySpread, arg2);
+	} else {
+		if (!get_pcvar_num(gCvarAllowVoteSetting)) {
+			console_print(id, "%l", "VOTE_NOTALLOWED");
+			return false;
+		}
+
+		if (!is_str_num(arg2)) {
+			console_print(id, "%l", "INVALID_NUMBER");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+public OnVoteMpHandgrenadeLegacyThrow(id, check, argc, arg1[], arg2[]) {
+	if (argc != 2) {
+		console_print(id, "%l", "VOTE_INVALID");
+		return false;
+	}
+
+	if (!check) {
+		set_pcvar_string(gCvarMpHandgrenadeLegacyThrow, arg2);
 	} else {
 		if (!get_pcvar_num(gCvarAllowVoteSetting)) {
 			console_print(id, "%l", "VOTE_NOTALLOWED");
