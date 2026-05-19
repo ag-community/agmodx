@@ -1,5 +1,5 @@
 /*
-    LLHL Gamemode for AG Mod X
+    Tournament Gamemode for AG Mod X
 
     # New cvars:
     - sv_ag_fpslimit_check_interval "5.0"
@@ -11,6 +11,11 @@
     - sv_ag_destroyable_satchel "1"
     - sv_ag_destroyable_satchel_hp "1"
     - sv_ag_block_namechange_inmatch "1"
+
+    # Default custom cvars values:
+    - sv_ag_mp5_legacy_max_ammo "0"
+    - sv_ag_mp5_legacy_spread "1"
+    - sv_ag_hgrenade_legacy_throw "0"
 
     # New vote:
     - mp_respawn_fix "0/1"
@@ -28,12 +33,12 @@
 #include <agmodx>
 #include <agmodx_stocks>
 
-#define PLUGIN      "AG Mod X LLHL"
-#define AUTHOR      "FlyingCat"
+#define PLUGIN      "AG Mod X Tournament"
+#define AUTHOR      "7mochi"
 
 #pragma semicolon 1
 
-#define MODE_TYPE_NAME "llhl"
+#define MODE_TYPE_NAME "tournament"
 
 #define GetPlayerHullSize(%1)  ((pev(%1, pev_flags) & FL_DUCKING) ? HULL_HEAD : HULL_HUMAN)
 
@@ -137,7 +142,7 @@ public agmodx_pre_config() {
 }
 
 public plugin_init() {
-    register_dictionary("agmodx_llhl.txt");
+    register_dictionary("agmodx_tournament.txt");
 
     register_forward(FM_StartFrame, "FwStartFrame");
 
@@ -154,7 +159,7 @@ public plugin_init() {
     register_forward(FM_SetModel, "FwSetModel");
     register_forward(FM_ClientUserInfoChanged, "FwClientUserInfoChanged");
 
-    // Add vote for mp_respawn_fix (Only in LLHL gamemode)
+    // Add vote for mp_respawn_fix (Only in tournament gamemode)
     ag_vote_add("mp_respawn_fix", "OnVoteRespawnFix");
 }
 
@@ -170,14 +175,14 @@ public inconsistent_file(id, const filename[], reason[64]) {
     if (get_cvar_num("sv_ag_match_running")) {
         for (new i = 1; i <= MaxClients; i++) {
             if (!ag_is_player_inmatch(i)) {
-                client_print(i, print_chat, "%l", "LLHL_FILECONSISTENCY_MSG", name, authid, filename);
+                client_print(i, print_chat, "%l", "TOURNAMENT_FILECONSISTENCY_MSG", name, authid, filename);
             }
         }
     } else {
-        client_print(0, print_chat, "%l", "LLHL_FILECONSISTENCY_MSG", name, authid, filename);
+        client_print(0, print_chat, "%l", "TOURNAMENT_FILECONSISTENCY_MSG", name, authid, filename);
     }
-    log_amx("%L", LANG_SERVER, "LLHL_FILECONSISTENCY_MSG", name, authid, filename);
-    server_cmd("kick #%d ^"%L^"", get_user_userid(id), id, "LLHL_FILECONSISTENCY_KICK", filename);
+    log_amx("%L", LANG_SERVER, "TOURNAMENT_FILECONSISTENCY_MSG", name, authid, filename);
+    server_cmd("kick #%d ^"%L^"", get_user_userid(id), id, "TOURNAMENT_FILECONSISTENCY_KICK", filename);
     return PLUGIN_HANDLED;
 }
 
@@ -253,9 +258,9 @@ public taskMeasureMeanFPS() {
                 } else {
                     static name[MAX_NAME_LENGTH];
                     get_user_name(id, name, charsmax(name));
-                    server_cmd("kick #%d ^"%L^"", get_user_userid(id), id, "LLHL_FPSL_KICK", get_pcvar_num(gCvarFpsMax));
-                    log_amx("%L", LANG_SERVER, "LLHL_FPSL_KICK_MSG", name, get_pcvar_num(gCvarFpsMax));
-                    client_print(0, print_chat, "%l", "LLHL_FPSL_KICK_MSG", name, get_pcvar_num(gCvarFpsMax));
+                    server_cmd("kick #%d ^"%L^"", get_user_userid(id), id, "TOURNAMENT_FPSL_KICK", get_pcvar_num(gCvarFpsMax));
+                    log_amx("%L", LANG_SERVER, "TOURNAMENT_FPSL_KICK_MSG", name, get_pcvar_num(gCvarFpsMax));
+                    client_print(0, print_chat, "%l", "TOURNAMENT_FPSL_KICK_MSG", name, get_pcvar_num(gCvarFpsMax));
                 }
             }
         }
@@ -264,7 +269,7 @@ public taskMeasureMeanFPS() {
 
 public taskShowVEngine() {
     set_dhudmessage(0, 100, 200, -1.0, -0.125, 0, 0.0, 10.0, 0.2);
-    show_dhudmessage(0, "LLHL Mode vEngine^n----------------------^nServer fps: %.1f^nFilecheck: %s", (1.0 / gActualServerFPS), get_pcvar_num(gCvarCheckSoundFiles) ? "On" : "Off");
+    show_dhudmessage(0, "Tournament mode vEngine^n----------------------^nServer fps: %.1f^nFilecheck: %s", (1.0 / gActualServerFPS), get_pcvar_num(gCvarCheckSoundFiles) ? "On" : "Off");
 }
 
 // If I don't do this when pausing/unpausing the game, the fps will be miscalculated (High values) and false positives will occur
@@ -281,7 +286,7 @@ public FwClientUserInfoChanged(id) {
         get_user_info(id, name, newName, charsmax(newName));
         if (get_pcvar_num(gCvarBlockNameChangeInMatch) && !equal(oldName, newName) && (cvar || (cvar = get_cvar_pointer("sv_ag_match_running"))) && get_pcvar_num(cvar) && hl_get_user_spectator(id)) {
             set_user_info(id, name, oldName);
-            client_print(id, print_chat, "%l", "LLHL_BLOCK_NAMECHANGE_MSG");
+            client_print(id, print_chat, "%l", "TOURNAMENT_BLOCK_NAMECHANGE_MSG");
             return FMRES_HANDLED;
         }
     }
@@ -328,7 +333,7 @@ public CmdUnstuck(id) {
     new Float:elapsedTime = get_gametime() - gUnstuckLastUsed[id];
 
     if (elapsedTime < cooldownTime) {
-        client_print(id, print_chat, "%l", "LLHL_UNSTUCK_ON_COOLDOWN", cooldownTime - elapsedTime);
+        client_print(id, print_chat, "%l", "TOURNAMENT_UNSTUCK_ON_COOLDOWN", cooldownTime - elapsedTime);
         return PLUGIN_HANDLED;
     }
 
@@ -336,8 +341,8 @@ public CmdUnstuck(id) {
     new value;
     if ((value = UnStuckPlayer(id)) != 1) {
         switch (value) {
-            case 0: client_print(id, print_chat, "%l", "LLHL_UNSTUCK_FREESPOT_NOTFOUND");
-            case -1: client_print(id, print_chat, "%l", "LLHL_UNSTUCK_PLAYER_DEAD");
+            case 0: client_print(id, print_chat, "%l", "TOURNAMENT_UNSTUCK_FREESPOT_NOTFOUND");
+            case -1: client_print(id, print_chat, "%l", "TOURNAMENT_UNSTUCK_PLAYER_DEAD");
         }
     }
 
@@ -398,7 +403,7 @@ public CvarMatchRunningHook(pcvar, const old_value[], const new_value[]) {
         new timestamp = get_systime();
         format_time(formatted, charsmax(formatted), "%d%m%Y_%H%M%S", timestamp);
         get_mapname(mapname, charsmax(mapname));
-        formatex(strDemo, charsmax(strDemo), "[LLHL]_%s_%s", mapname, formatted);
+        formatex(strDemo, charsmax(strDemo), "[Tournament]_%s_%s", mapname, formatted);
 
         // Record demo
         for (new id = 1; id <= MaxClients; id++) {
@@ -407,7 +412,7 @@ public CvarMatchRunningHook(pcvar, const old_value[], const new_value[]) {
 
             if (!hl_get_user_spectator(id)) {
                 client_cmd(id, "stop; record %s", strDemo);
-                client_print(id, print_chat, "%l", "LLHL_DEMO_RECORDING", strDemo);
+                client_print(id, print_chat, "%l", "TOURNAMENT_DEMO_RECORDING", strDemo);
             }
         }
     }

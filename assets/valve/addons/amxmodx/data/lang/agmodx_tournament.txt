@@ -1,0 +1,21 @@
+[en]
+TOURNAMENT_FPSL_KICK = Your 'fps_max' value is higher than %d
+TOURNAMENT_FPSL_KICK_MSG = %s has been kicked for exceeding the FPS limit (Max: %d)
+TOURNAMENT_DEMO_RECORDING = Recording %s.dem
+TOURNAMENT_UNSTUCK_ON_COOLDOWN = You have to wait %.1f seconds to be able to use this command again.
+TOURNAMENT_UNSTUCK_FREESPOT_NOTFOUND = No free spot was found to relocate you.
+TOURNAMENT_UNSTUCK_PLAYER_DEAD = You can't use this command while you're dead.
+TOURNAMENT_FILECONSISTENCY_MSG = %s (%s) has an invalid sound: %s
+TOURNAMENT_FILECONSISTENCY_KICK = Use the original sounds. Sound to change: %s
+TOURNAMENT_BLOCK_NAMECHANGE_MSG = You can't change your name while a match is in progress.
+
+[es]
+TOURNAMENT_FPSL_KICK = El valor de 'fps_max' que estas usando es mayor que %d
+TOURNAMENT_FPSL_KICK_MSG = %s ha sido desconectado por superar el limite de FPS (Maximo: %d)
+TOURNAMENT_DEMO_RECORDING = Grabando %s.dem
+TOURNAMENT_UNSTUCK_ON_COOLDOWN = Debes esperar %.1f segundos para poder usar el comando nuevamente.
+TOURNAMENT_UNSTUCK_FREESPOT_NOTFOUND = No se encontro ningun lugar libre para reubicarte.
+TOURNAMENT_UNSTUCK_PLAYER_DEAD = No puedes usar este comando mientras estas muerto.
+TOURNAMENT_FILECONSISTENCY_MSG = %s (%s) tiene un sonido invalido: %s
+TOURNAMENT_FILECONSISTENCY_KICK = Usa los sonidos originales. Sonido a cambiar: %s
+TOURNAMENT_BLOCK_NAMECHANGE_MSG = No puedes cambiar tu nombre mientras hay una partida en curso.
