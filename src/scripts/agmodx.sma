@@ -221,6 +221,8 @@ new gCvarCoreBlockSpec;
 new gCvarMatchRunning;
 
 new gFwPause;
+new gFwReceivedTimer;
+new gFwReceivedTimerResult;
 
 new const gWeaponClass[][] = {
 	"weapon_357",
@@ -395,6 +397,8 @@ public plugin_precache() {
 	fwPostConfig = CreateMultiForward("agmodx_post_config", ET_IGNORE);
 	
 	gFwPause = CreateMultiForward("agmodx_pause", ET_IGNORE);
+
+	gFwReceivedTimer = CreateMultiForward("agmodx_timer", ET_IGNORE, FP_CELL, FP_CELL);
 
 	// Load mode cvars
 	new mode[32];
@@ -777,6 +781,7 @@ StartAgTimer() {
 
 public AgTimerThink() {
 	gTimeLeft--;
+
 	if (CheckAgTimer())
 		ShowAgTimer();
 }
@@ -786,6 +791,8 @@ CheckAgTimer() {
 		remove_task(TASK_AGTIMER);
 		return false;
 	}
+
+	ExecuteForward(gFwReceivedTimer, gFwReceivedTimerResult, gTimeLimit, gTimeLeft);
 
 	if (gTimeLeft == 0 && gTimeLimit != 0) {
 		if (gVersusStarted && IsSuddenDeathNeeded()) {

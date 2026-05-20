@@ -47,3 +47,5 @@ native bool:ag_vote_exists(const name[]);
  * 
  */
 native bool:ag_is_player_inmatch(id);
+
+forward ag_received_effective_time(effectiveTime);
